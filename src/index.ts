@@ -40,7 +40,7 @@ async function getTaigaNotifications() {
 // Функция для отправки уведомлений в Telegram
 async function sendTelegramNotification(message: string) {
   try {
-    await bot.sendMessage(CHAT_ID, message);
+    await bot.sendMessage(Number(CHAT_ID), message);
   } catch (error) {
     console.error('Error sending Telegram notification:', error);
   }
