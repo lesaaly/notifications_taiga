@@ -26,7 +26,6 @@ const taigaApi = axios.create({
   }
 });
 
-// Функция для получения уведомлений из Taiga
 async function getTaigaNotifications() {
   try {
     const response = await taigaApi.get('/notifications');
@@ -37,7 +36,6 @@ async function getTaigaNotifications() {
   }
 }
 
-// Функция для отправки уведомлений в Telegram
 async function sendTelegramNotification(message: string) {
   try {
     await bot.sendMessage(Number(CHAT_ID), message);
