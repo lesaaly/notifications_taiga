@@ -28,7 +28,7 @@ const taigaApi = axios.create({
 
 async function getTaigaNotifications() {
   try {
-    const response = await taigaApi.get('/notifications');
+    const response = await taigaApi.get('task-statuses');
     return response.data;
   } catch (error) {
     console.error('Error fetching Taiga notifications:', error);
