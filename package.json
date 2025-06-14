@@ -11,14 +11,17 @@
     "get-chat-id": "ts-node src/get-chat-id.ts"
   },
   "dependencies": {
-    "node-telegram-bot-api": "^0.64.0",
+    "@supabase/supabase-js": "^2.49.4",
+    "@types/pg": "^8.11.12",
     "axios": "^1.6.7",
-    "dotenv": "^16.4.5"
+    "dotenv": "^16.4.5",
+    "node-telegram-bot-api": "^0.64.0",
+    "pg": "^8.14.1"
   },
   "devDependencies": {
     "@types/node": "^20.11.19",
     "@types/node-telegram-bot-api": "^0.64.2",
-    "typescript": "^5.3.3",
-    "ts-node": "^10.9.2"
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3"
   }
-} 
+}
