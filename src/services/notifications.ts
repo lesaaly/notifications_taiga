@@ -9,14 +9,27 @@ export class NotificationService {
     private taigaApiUrl: string
   ) {}
 
-  async getTaigaNotifications(chatId: number) {
+  async getTaigaNotifications(chatId: number, taigaUserId: string) {
     try {
       const user = await this.db.getUser(chatId);
+      
+      if (!user) {
+        console.error('Пользователь не найден в базе данных');
+        return null;
+      }
 
-      const response = await axios.get(`${this.taigaApiUrl}/tasks/`, {
+      if (!user.taiga_auth_token) {
+        console.error('Токен аутентификации отсутствует');
+        return null;
+      }
+
+      const response = await axios.get(`${this.taigaApiUrl}/tasks`, {
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${user.taiga_auth_token}`,
+        },
+        params: {
+          assigned_to: taigaUserId,
         }
       });
       return response.data;
@@ -30,7 +43,7 @@ export class NotificationService {
     try {
       await this.bot.sendMessage(chatId, message);
     } catch (error) {
-      console.error('Error sending Telegram notification:', error);
+      console.error('Error sending Telegram notification:');
     }
   }
 } 

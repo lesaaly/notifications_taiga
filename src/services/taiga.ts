@@ -13,7 +13,7 @@ export class TaigaService {
         password,
       });
 
-      return response.data.auth_token;
+      return response.data;
     } catch (error) {
       throw new Error("Ошибка аутентификации");
     }

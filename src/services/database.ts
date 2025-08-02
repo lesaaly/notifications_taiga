@@ -22,6 +22,7 @@ export class DatabaseService {
     taigaUsername: string;
     taigaAuthToken: string;
     isRegistered: boolean;
+    taigaUserId: string;
   }) {
     const { data, error } = await this.supabase
       .from("users")
@@ -30,6 +31,7 @@ export class DatabaseService {
         taiga_username: user.taigaUsername,
         taiga_auth_token: user.taigaAuthToken,
         is_registered: user.isRegistered,
+        taiga_user_id: user.taigaUserId,
       })
       .select();
 
@@ -42,7 +44,7 @@ export class DatabaseService {
       .from("users")
       .select("*")
       .eq("chat_id", chatId)
-      .single();
+      .maybeSingle();
 
     if (error) throw error;
     return data;

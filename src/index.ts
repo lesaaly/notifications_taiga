@@ -42,17 +42,29 @@ bot.on("message", async (msg) => {
     await bot.sendMessage(chatId, "Введите ваш пароль в Taiga");
   } else if (state?.step === "password" && state.username && text) {
     try {
-      const authToken = await TaigaService.authenticate(
+      const dataAuth = await TaigaService.authenticate(
         state.username,
         text,
         TAIGA_API_URL as string
       );
-      await db.saveUser({
-        chatId,
-        taigaUsername: state.username,
-        taigaAuthToken: authToken,
-        isRegistered: true,
-      });
+      console.log(dataAuth);
+      try {
+        await db.saveUser({
+          chatId,
+          taigaUsername: state.username,
+          taigaAuthToken: dataAuth.auth_token,
+          isRegistered: true,
+          taigaUserId: dataAuth.id,
+        });
+        console.log('Пользователь успешно сохранен в базу данных');
+        const savedUser = await db.getUser(chatId);
+        console.log('Сохраненный пользователь:', savedUser);
+      } catch (dbError) {
+        console.error('Ошибка при сохранении пользователя в базу данных:', dbError);
+        await bot.sendMessage(chatId, "Ошибка при сохранении данных. Попробуйте позже.");
+        userStates.delete(chatId);
+        return;
+      }
 
       userStates.delete(chatId);
       await bot.sendMessage(chatId, "Вы успешно авторизованы");
@@ -64,10 +76,18 @@ bot.on("message", async (msg) => {
 
   if (msg.text === "/notifications") {
     try {
+      const savedUser = await db.getUser(chatId);
       const notificationsData = await notifications.getTaigaNotifications(
-        chatId
+        chatId,
+        savedUser?.taiga_user_id,
       );
-      console.log(notificationsData);
+      
+      if (notificationsData === null) {
+        await bot.sendMessage(chatId, "Сначала нужно зарегистрироваться. Используйте /start");
+        return;
+      }
+      
+      console.log(notificationsData.length);
       // if (notificationsData) {
       //   const message = notificationsData.map((n: any) =>
       //     `🔔 ${n.subject}\n${n.description || ''}\n`
@@ -77,15 +97,11 @@ bot.on("message", async (msg) => {
       //   await notifications.sendTelegramNotification('Не удалось получить уведомления', chatId);
       // }
     } catch (error) {
-      await bot.sendMessage(chatId, "Сначала нужно зарегистрироваться");
+      console.error('Ошибка при получении уведомлений:', error);
+      await bot.sendMessage(chatId, "Произошла ошибка при получении уведомлений");
     }
   }
 });
 
 // Запускаем инициализацию
-// init().then(() => {
-//   console.log('Bot started');
-// }).catch(err => {
-//   console.error('Failed to start bot:', err);
-//   process.exit(1);
-// });
+console.log('Bot started successfully');
